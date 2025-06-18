@@ -3,29 +3,41 @@ import { cx } from "../../lib/cx.ts";
 import styles from "./insights.module.css";
 import type { Insight } from "../../schemas/insight.ts";
 
+import { returnBrandName } from "../../utils/insight-brand-utils.ts";
+
 type InsightsProps = {
-  insights: Insight[];
   className?: string;
+  insights: Insight[];
+  refreshInsights: () => void;
 };
 
-export const Insights = ({ insights, className }: InsightsProps) => {
-  const deleteInsight = () => undefined;
+export const Insights = (
+  { className, insights, refreshInsights }: InsightsProps,
+) => {
+  const deleteInsight = async (id: number) => {
+    await fetch(`/api/insights/delete/${id}`, {
+      method: "DELETE",
+    });
+    refreshInsights();
+  };
 
   return (
     <div className={cx(className)}>
       <h1 className={styles.heading}>Insights</h1>
       <div className={styles.list}>
-        {insights?.length
+        {insights?.length !== 0
           ? (
-            insights.map(({ id, text, date, brandId }) => (
+            insights.map(({ id, text, createdAt, brand }) => (
               <div className={styles.insight} key={id}>
                 <div className={styles["insight-meta"]}>
-                  <span>{brandId}</span>
+                  <span>{returnBrandName(brand)}</span>
                   <div className={styles["insight-meta-details"]}>
-                    <span>{date.toString()}</span>
+                    <span>{new Date(createdAt).toDateString()}</span>
                     <Trash2Icon
                       className={styles["insight-delete"]}
-                      onClick={deleteInsight}
+                      onClick={() => {
+                        deleteInsight(id);
+                      }}
                     />
                   </div>
                 </div>
@@ -33,7 +45,7 @@ export const Insights = ({ insights, className }: InsightsProps) => {
               </div>
             ))
           )
-          : <p>We have no insight!</p>}
+          : <p>We have no insights!</p>}
       </div>
     </div>
   );

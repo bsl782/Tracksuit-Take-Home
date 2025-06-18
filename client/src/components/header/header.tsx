@@ -1,13 +1,12 @@
-import { useState } from "react";
 import { Button } from "../button/button.tsx";
 import styles from "./header.module.css";
-import { AddInsight } from "../add-insight/add-insight.tsx";
 
 export const HEADER_TEXT = "Suit Tracker Insights";
+type HeaderProps = {
+  onAddInsight: () => void;
+};
 
-export const Header = () => {
-  const [addInsightOpen, setAddInsightOpen] = useState(false);
-
+export const Header = ({ onAddInsight }: HeaderProps) => {
   return (
     <>
       <header className={styles.header}>
@@ -16,14 +15,10 @@ export const Header = () => {
           <Button
             label="Add insight"
             theme="secondary"
-            onClick={() => setAddInsightOpen(true)}
+            onClick={onAddInsight}
           />
         </div>
       </header>
-      <AddInsight
-        open={addInsightOpen}
-        onClose={() => setAddInsightOpen(false)}
-      />
     </>
   );
 };
